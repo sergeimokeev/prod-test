@@ -1,0 +1,60 @@
+version: '3.3'
+
+services:
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+      args:
+        - PROJECT_NAME=${PROJECT_NAME}
+    container_name: ${PROJECT_NAME}-nginx
+    volumes:
+      - ./:/var/www/${PROJECT_NAME}
+    ports:
+      - 127.0.0.1:8080:80
+    links:
+      - php
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php-fpm.dockerfile
+      args:
+        - PROJECT_NAME=${PROJECT_NAME}
+    container_name: ${PROJECT_NAME}-php
+    user: "${UID}:${GID}"
+    volumes:
+      - ./:/var/www/${PROJECT_NAME}
+      - ./docker/php-ini:/usr/local/etc/php/custom.d
+    environment:
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
+    links:
+      - postgre
+
+  postgre:
+    build:
+      context: .
+      dockerfile: docker/postgre.dockerfile
+    container_name: ${PROJECT_NAME}-postgre
+    volumes:
+      - ./Makefile:/Makefile
+    ports:
+      - 127.0.0.1:53307:5432
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=${PROJECT_NAME}_db
+
+  mailcatcher:
+      image: yappabe/mailcatcher
+      container_name: ${PROJECT_NAME}-mailcatcher
+      ports:
+          - 127.0.0.1:1025:1025
+          - 127.0.0.1:1080:1080
+
+  redis:
+      image: redis:6.0
+      container_name: ${PROJECT_NAME}-redis
+      ports:
+          - "6382:6379"
