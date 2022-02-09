@@ -23,7 +23,6 @@ class ProductController extends Controller
 
     public function __construct()
     {
-        $this->data = (new ProductDataService());
         $this->middleware('auth');
     }
 
@@ -44,11 +43,11 @@ class ProductController extends Controller
         return view('products.edit', compact('product'));
     }
 
-    public function store(Product $product, ProductStoreRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(Product $product, ProductStoreRequest $request, ProductDataService $data): \Illuminate\Http\RedirectResponse
     {
         $validatedData = $request->validated();
 
-        $validatedData['data'] = $this->data->getData($request);
+        $validatedData['data'] = $data->getData($request);
 
         $item = $product->create($validatedData);
         SendNotificationJob::dispatch(auth()->user(), $item);
@@ -56,11 +55,11 @@ class ProductController extends Controller
         return redirect()->route('products')->with('success','Item created successfully!');
     }
 
-    public function update(Product $product, ProductUpdateRequest $request): \Illuminate\Http\RedirectResponse
+    public function update(Product $product, ProductUpdateRequest $request, ProductDataService $data): \Illuminate\Http\RedirectResponse
     {
         $validatedData = $request->validated();
 
-        $validatedData['data'] = $this->data->getData($request);
+        $validatedData['data'] = $data->getData($request);
 
         $product->update($validatedData);
 
