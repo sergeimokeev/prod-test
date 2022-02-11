@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
 
 Route::prefix('products')->group(function(){
     Route::get('/', [ProductController::class, 'index'])->name('products');
@@ -20,9 +24,7 @@ Route::prefix('products')->group(function(){
     Route::get('/edit/{product}', [ProductController::class, 'edit'])->name('edit.product');
     Route::post('/create', [ProductController::class, 'store']);
     Route::put('/edit/{product}', [ProductController::class, 'update'])->name('update.product');
-    Route::delete('/{product}', [ProductController::class, 'delete'])->name('delete.product');
+    Route::delete('/delete/{product}', [ProductController::class, 'delete'])->name('delete.product');
+    Route::get('/export', [ProductController::class, 'export'])->name('export.product');
 });
 
-Auth::routes();
-
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

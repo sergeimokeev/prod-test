@@ -49,6 +49,10 @@
                     </tbody>
                 </table>
                 <a class="btn btn-primary" href="{{ route('create.product') }}">Добавить товар</a>
+                <form class="mt-2" action="{{ route('export.product') }}" method="get">
+                    @csrf
+                    <button class="btn btn-primary" type="submit">Экспорт всех товаров</button>
+                </form>
                 @if (session('success'))
                     <div class="alert alert-success mt-2">
                         {{ session('success') }}

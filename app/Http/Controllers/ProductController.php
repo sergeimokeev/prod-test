@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
+use App\Exports\UsersExport;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Jobs\SendNotificationJob;
 use App\Models\Product;
-use App\Models\User;
-use App\Notifications\ProductCreatedNotification;
 use App\Services\ProductDataService;
-use Illuminate\Support\Facades\Notification;
+use Maatwebsite\Excel\Facades\Excel;
 use function redirect;
 use function session;
 use function view;
@@ -71,5 +71,10 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products')->with('success','Item deleted successfully!');
+    }
+
+    public function export(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return Excel::download(new ProductsExport, 'products.xlsx');
     }
 }
